@@ -1,9 +1,7 @@
 {
-  "name": "azot",
+  "name": "astro-azot",
+  "type": "module",
   "version": "0.0.1",
-  "dependencies": {
-    "astro": "^3.2.0"
-  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -11,5 +9,7 @@
     "preview": "astro preview",
     "astro": "astro"
   },
-  "type": "module"
+  "dependencies": {
+    "astro": "^3.2.0"
+  }
 }
