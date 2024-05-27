@@ -1,11 +1,9 @@
 import { defineConfig } from 'astro/config';
-// import mdx from '@astrojs/mdx';
 
-// import sitemap from '@astrojs/sitemap';
+/** @type {import('astro').AstroUserConfig} */
+import playformCompress from "@playform/compress";
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://insinesbl.github.io/',
-	base: '/'
-	// integrations: [mdx(), sitemap()],
+  integrations: [playformCompress()]
 });

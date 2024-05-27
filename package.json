@@ -1,18 +1,35 @@
 {
-  "name": "astro-azot",
+  "name": "foxford-fastdev-astro",
   "type": "module",
+  "description": "Fronted for fast-dev astro projects",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "astro:check": "bunx astro check",
+    "biome:check": "bunx @biomejs/biome check ./src",
+    "biome:format": "bunx @biomejs/biome format --write ./src",
+    "biome:lint": "bunx @biomejs/biome lint ./src",
+    "build": "bun run tools/build.ts",
+    "start": "bun run tools/start.ts",
+    "lint": "concurrently \"bun run astro:check\" \"bun run biome:check\""
   },
   "dependencies": {
-    "@astrojs/mdx": "^1.1.0",
-    "@astrojs/rss": "^3.0.0",
-    "@astrojs/sitemap": "^3.0.0",
-    "astro": "^3.2.0"
+    "@astrojs/check": "0.7.0",
+    "@astrojs/ts-plugin": "^1.8.0",
+    "@foxford/foxford-js-sdk": "3.2.0",
+    "@playform/compress": "^0.0.7",
+    "astro": "4.9.1",
+    "chalk": "^5.3.0",
+    "rimraf": "^5.0.5",
+    "sass": "^1.77.2",
+    "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.7.3",
+    "@types/bun": "^1.1.3",
+    "@types/inquirer": "^9.0.7",
+    "@types/yargs": "^17.0.32",
+    "concurrently": "^8.2.2",
+    "inquirer": "^9.2.20",
+    "yargs": "^17.7.2"
   }
 }
