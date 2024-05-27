@@ -10,9 +10,6 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
-    env:
-      IS_FASTDEV: ${{ contains(github.ref, 'FASTDEV') }}
-
     steps:
       # Checkout the repository
       - name: Checkout repository
@@ -24,8 +21,8 @@ jobs:
           curl -fsSL https://bun.sh/install | bash
           export BUN_INSTALL="$HOME/.bun"
           export PATH="$BUN_INSTALL/bin:$PATH"
-          echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
-          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
+          echo "BUN_INSTALL=$HOME/.bun" >> $GITHUB_ENV
+          echo "PATH=$BUN_INSTALL/bin:$PATH" >> $GITHUB_ENV
         shell: bash
 
       # Cache Bun dependencies
@@ -41,25 +38,21 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: ~/.bun/bin/bun install
-        shell: bash
-        env:
-          BUN_INSTALL: ${{ env.BUN_INSTALL }}
-          PATH: ${{ env.PATH }}
+        run: bun install
 
       # Build the project
       - name: Build the project
-        run: ~/.bun/bin/bun run build
-        shell: bash
-        env:
-          BUN_INSTALL: ${{ env.BUN_INSTALL }}
-          PATH: ${{ env.PATH }}
+        run: bun run build
 
       # Determine the branch to deploy
       - name: Determine branch to deploy
         id: deploy-branch
-        run: |
-          if [[ ${{ env.IS_FASTDEV }} == 'true' ]]; then
-            echo "branch=gh-pages-beta" >> $GITHUB_ENV
-          else
-            echo "branch=gh-pages" >> $GITHUB_ENV
+        run: echo "::set-output name=branch::$(if echo $GITHUB_REF | grep -q 'FASTDEV'; then echo 'gh-pages-beta'; else echo 'gh-pages'; fi)"
+
+      # Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: ${{ steps.deploy-branch.outputs.branch }}
