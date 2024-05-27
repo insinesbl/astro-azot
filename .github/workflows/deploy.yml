@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+      - '**/FASTDEV**'
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+
+    env:
+      IS_FASTDEV: ${{ contains(github.ref, 'FASTDEV') }}
 
     steps:
       # Checkout the repository
@@ -20,6 +24,7 @@ jobs:
           curl -fsSL https://bun.sh/install | bash
           echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
           echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
+          source $HOME/.bashrc
         shell: bash
 
       # Cache Bun dependencies
@@ -35,11 +40,23 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: bun install
+        run: ~/.bun/bin/bun install
+        shell: bash
 
       # Build the project
       - name: Build the project
-        run: bun run build
+        run: ~/.bun/bin/bun run build
+        shell: bash
+
+      # Determine the branch to deploy
+      - name: Determine branch to deploy
+        id: deploy-branch
+        run: |
+          if [[ ${{ env.IS_FASTDEV }} == 'true' ]]; then
+            echo "branch=gh-pages-beta" >> $GITHUB_ENV
+          else
+            echo "branch=gh-pages" >> $GITHUB_ENV
+          fi
 
       # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
@@ -47,3 +64,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          publish_branch: ${{ env.branch }}
